@@ -33,6 +33,8 @@ namespace RenameDeluxe
         private List<string> fList = new List<string>();
         private string[] ArrFiles;
         private int Id = 0;
+        private string caption;
+        private string messageBoxText;
         //public string Name;
         //private DateTime euDate;
         //private string Chars = @"/?*\(){}#$@%";
@@ -46,6 +48,15 @@ namespace RenameDeluxe
             sPath = TxtIN;
             tPath = TxtOU;
             GetFiles();
+        }
+
+        public void ErrMsg(Exception e)
+        {
+            caption = "Something went wrong";
+            messageBoxText = e.ToString();
+            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxImage icon = MessageBoxImage.Error;
+            MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon);
         }
 
         public void DirCreate()
@@ -93,7 +104,7 @@ namespace RenameDeluxe
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ErrMsg(e);
                 }
                 lstITM.Items.Add(new Item() { ID = Id, Name = NewName, Date = Date, Message = date });
             }
