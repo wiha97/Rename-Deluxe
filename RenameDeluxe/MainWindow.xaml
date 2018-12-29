@@ -9,7 +9,7 @@
     <Grid>
         <Button x:Name="btnRN" Content="Rename files" Background="LawnGreen" FontSize="20px" FontFamily="CalibriBold" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="120" Height="45" Click="btnRN_Click"/>
         <Button x:Name="btnRF" Content="Refresh" Margin="11,55,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" Click="btnRF_Click" Height="29" Background="DarkOrange"/>
-        <TextBox x:Name="txtIN" Text="D:\RenameDeluxe"  Height="20" Margin="135,5,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtIN" Text="C:\RenameDeluxe"  Height="20" Margin="135,5,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <!--<Button x:Name="btnDEL" Content="Del" Background="Red" TextElement.Foreground="White" Margin="136,55,143,0" VerticalAlignment="Top" Click="btnDEL_Click" Height="29" MaxWidth="59"/>-->
         <Button x:Name="btnDEL" Content="Del" Background="Red" TextElement.Foreground="White" Margin="136,55,0,0" VerticalAlignment="Top" Width="56" Click="btnDT_Click" Height="29" HorizontalAlignment="Left"/>
         <Button x:Name="btnDT" Content="Date" Margin="200,55,0,0" VerticalAlignment="Top" Width="56" Click="btnDT_Click" Height="29" HorizontalAlignment="Left"/>
@@ -23,6 +23,6 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBox x:Name="txtOU" Text="D:\RenameDeluxe\Date"  Height="20" Margin="135,30,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtOU" Text="C:\RenameDeluxe\Date"  Height="20" Margin="135,30,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
     </Grid>
 </Window>

@@ -63,9 +63,10 @@ namespace RenameDeluxe
         /// <summary>
         /// Adds a date to the file name
         /// </summary>
-        public void AddDate()
+        public void Rename()
         {
             DirCreate();
+            string Name;
             string NewName;
             lstITM.Items.Clear();
             ArrFiles = Directory.GetFiles(sPath);
@@ -140,31 +141,31 @@ namespace RenameDeluxe
             }
         }
 
-        public void Rename()
-        {
-            lstITM.Items.Clear();
-            Id = 0;
-            var LFiles = ArrFiles.ToList();
-            foreach (string item in LFiles)
-            {
-                string Name;
-                fList.Add(item);
+        //public void Rename()
+        //{
+        //    lstITM.Items.Clear();
+        //    Id = 0;
+        //    var LFiles = ArrFiles.ToList();
+        //    foreach (string item in LFiles)
+        //    {
+        //        string Name;
+        //        fList.Add(item);
 
-                Id++;
-                Name = Path.GetFileName(item);
-                Regex illegalInFileName = new Regex(@"[\\/:*?)!#¤%$!&•(""+\-<>|]");
-                string myString = illegalInFileName.Replace(Name, "_");
-                try
-                {
-                    File.Move(sPath + "\\" + Name, sPath + "\\" + myString);
-                }
-                catch (Exception e)
-                {
-                    //File.CreateText(fPath + "\\oops.txt");
-                }
-                lstITM.Items.Add(new Item() { ID = Id, Name = myString, Date = Date });
-            }
-        }
+        //        Id++;
+        //        Name = Path.GetFileName(item);
+        //        Regex illegalInFileName = new Regex(@"[\\/:*?)!#¤%$!&•(""+\-<>|]");
+        //        string myString = illegalInFileName.Replace(Name, "_");
+        //        try
+        //        {
+        //            File.Move(sPath + "\\" + Name, sPath + "\\" + myString);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            //File.CreateText(fPath + "\\oops.txt");
+        //        }
+        //        lstITM.Items.Add(new Item() { ID = Id, Name = myString, Date = Date });
+        //    }
+        //}
 
         public void OpenFolder()
         {
@@ -196,7 +197,7 @@ namespace RenameDeluxe
 
         private void btnDT_Click(object sender, RoutedEventArgs e)
         {
-            AddDate();
+            Rename();
         }
 
         private void btnRF_Click(object sender, RoutedEventArgs e)
