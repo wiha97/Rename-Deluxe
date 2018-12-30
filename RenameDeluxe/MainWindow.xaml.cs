@@ -26,15 +26,18 @@ namespace RenameDeluxe
     {
         private string TxtIN { get { return txtIN.Text; } set { txtIN.Text = value; } }
         private string TxtOU { get { return txtOU.Text; } set { txtOU.Text = value; } }
+        private string TxtID { get { return txtID.Text; } set { txtID.Text = value; } }
         private DateTime? Date = DateTime.Now;
         private string sPath;
         private string tPath;
+        private string sign;
         private string fName;
         private List<string> fList = new List<string>();
         private string[] ArrFiles;
         private int Id = 0;
         private string caption;
         private string messageBoxText;
+        private string aName;
         //public string Name;
         //private DateTime euDate;
         //private string Chars = @"/?*\(){}#$@%";
@@ -47,28 +50,42 @@ namespace RenameDeluxe
             InitializeComponent();
             sPath = TxtIN;
             tPath = TxtOU;
+            sign = TxtID;
             GetFiles();
+        }
+
+        public void CheckDate(string attchs)
+        {
+            string[] isDate = new string[] { "yyyyMMdd yyyy-MM-dd yyyy:MM:dd yyyy_MM_dd" };
+            DateTime dateTime = new DateTime();
+
+            if (DateTime.TryParseExact(attchs, isDate,CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dateTime))
+            {
+                aName = "test";
+            }
+        }
+
+        public void ReadAtt(string item)
+        {
+            Storage.Message message = new Storage.Message(item);
+            string attch = message.GetAttachmentNames();
+            //CheckDate(attchs);
+            aName = attch;
         }
 
         public void ErrMsg(Exception e)
         {
             caption = "Something went wrong";
             messageBoxText = e.ToString();
-            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxButton button = MessageBoxButton.OK;
             MessageBoxImage icon = MessageBoxImage.Error;
             MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon);
         }
 
         public void DirCreate()
         {
-            if (!Directory.Exists(sPath))
-            {
-                Directory.CreateDirectory(sPath);
-            }
-            if (!Directory.Exists(tPath))
-            {
-                Directory.CreateDirectory(tPath);
-            }
+            Directory.CreateDirectory(sPath);
+            Directory.CreateDirectory(tPath);
         }
 
         /// <summary>
@@ -88,25 +105,31 @@ namespace RenameDeluxe
                 Storage.Message message = new Storage.Message(item);
                 string date = message.ReceivedOn.ToString();
                 Name = message.Subject;
+                if (Name.Length < 1)
+                {
+                    ReadAtt(item);
+                    Name = aName;
+                }
 
                 //Renames the file so it won't have any special characters
                 //DateTime euDate = DateTime.ParseExact(date, "HH:mm", CultureInfo.InvariantCulture);
                 DateTime euDate = DateTime.Parse(date);
                 fName = Path.GetFileName(item);
-                Regex illegalInFileName = new Regex(@"[\\/;/:*?)!#//¤%/$!&•(""<>|]");
+                Regex illegalInFileName = new Regex(@"[\\/;/:*?)!#//¤%/$!,.&•(""<>|]");
                 string myString = illegalInFileName.Replace(euDate.ToString("HH:\\_mm_") + Name, "");
                 NewName = myString + Name;
-                //DelOld();
+                string source = sPath + "\\" + fName;
+                string target = tPath + "\\" + myString;
                 try
                 {
-                    //Copies the files over to a new folder as it won't let you change anything when it has just been "opened"
-                    File.Copy(sPath + "\\" + fName, tPath + "\\" + myString + ".msg");
+                    File.Copy(source, target + ".msg");
                 }
                 catch (Exception e)
                 {
                     ErrMsg(e);
                 }
                 lstITM.Items.Add(new Item() { ID = Id, Name = NewName, Date = Date, Message = date });
+                Process.Start(tPath);
             }
         }
 
@@ -120,11 +143,11 @@ namespace RenameDeluxe
             {
                 try
                 {
-                    File.Delete(sPath + "\\" + Name);
+                    File.Delete(item);
                 }
                 catch (Exception e)
                 {
-
+                    ErrMsg(e);
                 }
             }
         }
@@ -201,14 +224,14 @@ namespace RenameDeluxe
             Rename();
         }
 
-        private void btnDEL_Click(object sender, RoutedEventArgs e)
+        private void btnDel_Click(object sender, RoutedEventArgs e)
         {
             Delete();
         }
 
-        private void btnDT_Click(object sender, RoutedEventArgs e)
+        private void btnICN_Click(object sender, RoutedEventArgs e)
         {
-            Rename();
+
         }
 
         private void btnRF_Click(object sender, RoutedEventArgs e)
