@@ -4,17 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using MsgReader.Outlook;
 
 namespace RenameDeluxe
@@ -27,6 +18,7 @@ namespace RenameDeluxe
         private string TxtIN { get { return txtIN.Text; } set { txtIN.Text = value; } }
         private string TxtOU { get { return txtOU.Text; } set { txtOU.Text = value; } }
         private string TxtID { get { return txtID.Text; } set { txtID.Text = value; } }
+        private string oops;
         private DateTime? Date = DateTime.Now;
         private string sPath;
         private string tPath;
@@ -38,6 +30,9 @@ namespace RenameDeluxe
         private string caption;
         private string messageBoxText;
         private string aName;
+        private string content;
+        private string source = "source.txt";
+        private string target = "target.txt";
         //public string Name;
         //private DateTime euDate;
         //private string Chars = @"/?*\(){}#$@%";
@@ -48,8 +43,10 @@ namespace RenameDeluxe
         public MainWindow()
         {
             InitializeComponent();
+            ReadSaves();
             sPath = TxtIN;
             tPath = TxtOU;
+            oops = sPath + "\\oops";
             sign = TxtID;
             GetFiles();
         }
@@ -62,6 +59,37 @@ namespace RenameDeluxe
             if (DateTime.TryParseExact(attchs, isDate,CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dateTime))
             {
                 aName = "test";
+            }
+        }
+
+        public void SaveSource() //Saves a .txt file with the source path
+        {
+            //string file = "source.txt";
+            content = sPath;
+            File.WriteAllText(source, content);
+        }
+
+        public void SaveTarget() //Saves a .txt file with the target path
+        {
+            content = tPath;
+            File.WriteAllText(target, content);
+        }
+
+        public void ReadSaves() //Reads both source.txt and target.txt and puts them in their respective textboxes
+        {
+            if (File.Exists(source))
+            {
+                foreach (string line in File.ReadLines(source))
+                {
+                    TxtIN = line;
+                }
+            }
+            if (File.Exists(target))
+            {
+                foreach (string line in File.ReadLines(target))
+                {
+                    TxtOU = line;
+                }
             }
         }
 
@@ -86,6 +114,7 @@ namespace RenameDeluxe
         {
             Directory.CreateDirectory(sPath);
             Directory.CreateDirectory(tPath);
+            Directory.CreateDirectory(oops);
         }
 
         /// <summary>
@@ -93,6 +122,8 @@ namespace RenameDeluxe
         /// </summary>
         public void Rename()
         {
+            sPath = TxtIN;
+            tPath = TxtOU;
             DirCreate();
             string Name;
             string NewName;
@@ -114,23 +145,39 @@ namespace RenameDeluxe
                 //Renames the file so it won't have any special characters
                 //DateTime euDate = DateTime.ParseExact(date, "HH:mm", CultureInfo.InvariantCulture);
                 DateTime euDate = DateTime.Parse(date);
+                euDate.ToString("YY_MM_DD_HH:\\_mm_");
                 fName = Path.GetFileName(item);
-                Regex illegalInFileName = new Regex(@"[\\/;/:*?)!#//¤%/$!,.&•(""<>|]");
-                string myString = illegalInFileName.Replace(euDate.ToString("HH:\\_mm_") + Name, "");
-                NewName = myString + Name;
+                Regex illegalInFileName = new Regex(@"[\\/;/:*?)!#//¤%/$!,.&•(""<>|+]");
+                if(chkBX.IsChecked == true)
+                {
+                    NewName = illegalInFileName.Replace(euDate.ToString("yy/MM/dd HH:\\_mm_") + Name, "");
+                }
+                else
+                {
+                    NewName = illegalInFileName.Replace(euDate.ToString("HH:\\_mm_") + Name, "");
+                }
                 string source = sPath + "\\" + fName;
-                string target = tPath + "\\" + myString;
+                string target = tPath + "\\" + NewName;
+                string tOops = oops + "\\" + NewName;
                 try
                 {
-                    File.Copy(source, target + ".msg");
+                    if(File.Exists(target + ".msg"))
+                    {
+                        File.Copy(source, target + sign + ".msg");
+                    }
+                    else
+                    {
+                        File.Copy(source, target + ".msg");
+                    }
                 }
                 catch (Exception e)
                 {
                     ErrMsg(e);
+                    lstITM.Items.Add(new Item() { ID = Id, Name = NewName, Date = Date, Message = date });
+                    File.Copy(source, tOops + ".msg");
                 }
-                lstITM.Items.Add(new Item() { ID = Id, Name = NewName, Date = Date, Message = date });
-                Process.Start(tPath);
             }
+            Process.Start(tPath);
         }
 
         /// <summary>
@@ -238,6 +285,8 @@ namespace RenameDeluxe
         {
             sPath = TxtIN;
             tPath = TxtOU;
+            SaveSource();
+            SaveTarget();
             lstITM.Items.Clear();
             OpenFolder();
             GetFiles();
